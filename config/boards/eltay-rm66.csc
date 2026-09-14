@@ -48,3 +48,25 @@ function post_family_config_branch_vendor__eltay_rm66_kernel() {
 	declare -g LINUXCONFIG="linux-rk35xx-vendor"
 	display_alert "$BOARD" "Vendor NPU/Media reference: NPU enabled; camera DT integration pending; PM domains always_on retained" "info"
 }
+
+function post_family_tweaks__eltay_rm66_lxqt_lightdm() {
+	[[ "${BRANCH}" == "current" && "${RELEASE}" == "trixie" &&
+		"${BUILD_DESKTOP}" == "yes" && "${DESKTOP_ENVIRONMENT}" == "lxqt" ]] || return 0
+
+	# Keep the stock LXQt package set; only replace its display manager.
+	do_with_retries 3 chroot_sdcard_apt_get_install lightdm lightdm-gtk-greeter openbox
+	chroot_sdcard_apt_get_remove --purge sddm
+	run_host_command_logged mkdir -p "${SDCARD}/etc/lightdm/lightdm.conf.d" "${SDCARD}/etc/X11"
+	run_host_command_logged rm -f "${SDCARD}/etc/lightdm/lightdm.conf.d/10-slick-greeter.conf"
+	cat > "${SDCARD}/etc/lightdm/lightdm.conf.d/11-armbian.conf" <<- 'EOF'
+		[Seat:*]
+		allow-guest=false
+		greeter-show-manual-login=false
+		greeter-session=lightdm-gtk-greeter
+		user-session=lxqt
+		autologin-session=lxqt
+	EOF
+	printf '%s\n' '/usr/sbin/lightdm' > "${SDCARD}/etc/X11/default-display-manager"
+	chroot_sdcard "echo 'lightdm shared/default-x-display-manager select lightdm' | debconf-set-selections"
+	chroot_sdcard systemctl --no-reload enable --force lightdm.service
+}
