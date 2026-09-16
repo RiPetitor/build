@@ -8,9 +8,10 @@
  * Rockchip BSP 6.1 bindings of armbian/linux-rockchip rk-6.1-rkr5.1.
  * Electrical values mirror the validated Linux 6.18 baseline (Orange Pi 3B
  * v2.1 donors retained as experimental baseline; not every timing or supply
- * value is validated by the module documentation). Camera/CSI/ISP nodes are
- * deliberately NOT here: the CAM1 carrier wiring is not validated yet and
- * the generic DTB must not describe hardware nobody probed. The NPU is
+ * value is validated by the module documentation). Camera nodes live in the
+ * carrier dtsi: the CAM1/CAM2 wiring is taken from ELTAY's own board DTS for
+ * RM66 + BB CM4 (CAM1 = I2C1 + csi2_dphy1 -> rkisp_vir0, CAM2 = I2C3 +
+ * csi2_dphy2), see rk3566-eltay-rm66-reference-carrier.dtsi. The NPU is
  * enabled because it is module-internal (RK3566 RKNPU2, PMIC DCDC_REG4).
  */
 
@@ -481,6 +482,11 @@
 	#address-cells = <1>;
 	#size-cells = <0>;
 	status = "okay";
+	/* Without the pinmux the controller talks to unconnected pins, which
+	 * the kernel reports as "spi-nor spi4.0: unrecognized JEDEC id bytes:
+	 * 00 00 00 00 00 00". Matches ELTAY's own board DTS. */
+	pinctrl-names = "default";
+	pinctrl-0 = <&fspi_pins>;
 
 	flash@0 {
 		compatible = "jedec,spi-nor";
