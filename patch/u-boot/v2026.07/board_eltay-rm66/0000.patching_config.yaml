@@ -1,0 +1,6 @@
+config:
+  overlay-directories:
+    - { source: "defconfig", target: "configs" }
+    - { source: "dt_upstream_rockchip", target: "dts/upstream/src/arm64/rockchip" }
+    - { source: "dt_uboot", target: "arch/arm/dts" }
+    - { source: "board", target: "board/elron/eltay-rm66-rk3566" }
