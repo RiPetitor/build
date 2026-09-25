@@ -1,15 +1,17 @@
 // SPDX-License-Identifier: (GPL-2.0+ OR MIT)
 
-/*
- * Reference carrier composition for ELTAY RM66.
- * Include after rk3566-eltay-rm66.dtsi.
- *
- * Defines peripherals for ELTAY RM66 on reference carrier board (BB CM4):
- * HDMI, USB, Gigabit Ethernet, SD card, PCIe, LEDs, and status regulators.
- */
+/* ELTAY RM66 module on the ELTAY BB CM4 reference carrier. */
+
+/dts-v1/;
 
 #include <dt-bindings/leds/common.h>
 #include <dt-bindings/soc/rockchip,vop2.h>
+#include "rk3566-eltay-rm66.dtsi"
+
+/ {
+	model = "ELTAY RM66 on ELTAY BB CM4";
+	compatible = "elron,eltay-rm66-bb-cm4", "elron,eltay-rm66", "rockchip,rk3566";
+};
 
 / {
 	aliases {
