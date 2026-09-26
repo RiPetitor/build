@@ -46,17 +46,17 @@ compile_crust() {
 		return 0
 	fi
 
-	declare binutils_version binutils_flags_crust=""
+	declare binutils_version
 	binutils_version=$(env or1k-elf-ld.bfd --version | head -1 | cut -d ")" -f 2 | xargs echo -n)
 	display_alert "Binutils version for Crust" "${binutils_version}" "info"
 
 	run_host_command_logged CCACHE_BASEDIR="$(pwd)" \
 		"CFLAGS='-fdiagnostics-color=always -Wno-error=attributes -Wno-error=incompatible-pointer-types'" \
-		make ${CRUSTCONFIG} "${CTHREADS}" "CROSS_COMPILE='$CCACHE $CRUST_COMPILER'"
+		make ${CRUSTCONFIG} "${CTHREADS}" "CROSS_COMPILE='${CCACHE:+${CCACHE} }${CRUST_COMPILER}'"
 
 	run_host_command_logged CCACHE_BASEDIR="$(pwd)" \
 		"CFLAGS='-fdiagnostics-color=always -Wno-error=attributes -Wno-error=incompatible-pointer-types'" \
-		make $target_make "${CTHREADS}" "CROSS_COMPILE='$CCACHE $CRUST_COMPILER'"
+		make $target_make "${CTHREADS}" "CROSS_COMPILE='${CCACHE:+${CCACHE} }${CRUST_COMPILER}'"
 
 	# @TODO: severely missing logging
 	[[ $(type -t crust_custom_postprocess) == function ]] && crust_custom_postprocess 2>&1
