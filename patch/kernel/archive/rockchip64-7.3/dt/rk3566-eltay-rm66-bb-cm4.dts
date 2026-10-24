@@ -172,7 +172,7 @@
 };
 
 &usb_host0_xhci {
-	dr_mode = "host";
+	dr_mode = "otg";
 	status = "okay";
 };
 
